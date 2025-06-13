@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valores Bíblicos - Quiz Interactivo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .bg-sky-blue {
+            background-color: #e0f2fe;
+        }
+        
+        .bg-navy-blue {
+            background-color: #1e3a8a;
+        }
+        
+        .text-navy-blue {
+            color: #1e3a8a;
+        }
+        
+        .border-navy-blue {
+            border-color: #1e3a8a;
+        }
+        
+        .btn-primary {
+            background-color: #2563eb;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: #1d4ed8;
+            transform: translateY(-2px);
+        }
+        
+        .option-selected {
+            background-color: #dbeafe !important;
+            border: 2px solid #2563eb !important;
+        }
+        
+        .option-correct {
+            background-color: #bbf7d0 !important;
+            border: 2px solid #22c55e !important;
+        }
+        
+        .option-incorrect {
+            background-color: #fecaca !important;
+            border: 2px solid #ef4444 !important;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .bible-icon {
+            font-size: 1.5rem;
+            margin-right: 8px;
+            color: #2563eb;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-sky-blue">
+    <!-- Header -->
+    <header class="bg-navy-blue text-white py-6 shadow-lg">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-3xl md:text-4xl font-bold">
+                <i class="fas fa-bible bible-icon"></i>Valores Bíblicos
+            </h1>
+            <p class="mt-2 text-lg">Fortaleciendo principios morales y éticos</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Registration Form -->
+        <div id="registration" class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6 fade-in">
+            <h2 class="text-2xl font-bold text-navy-blue text-center mb-6">Registro</h2>
+            <form id="registerForm" class="space-y-4">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nombre completo</label>
+                    <input type="text" id="name" name="name" required 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="grade" class="block text-sm font-medium text-gray-700 mb-1">Grado</label>
+                    <select id="grade" name="grade" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="" disabled selected>Selecciona tu grado</option>
+                        <option value="1BGU">1° BGU</option>
+                        <option value="2BGU">2° BGU</option>
+                        <option value="3BGU">3° BGU</option>
+                    </select>
+                </div>
+                <div class="text-center">
+                    <button type="submit" 
+                        class="mt-4 px-6 py-2 btn-primary text-white font-semibold rounded-lg shadow-md hover:shadow-lg">
+                        Comenzar Quiz <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Quiz Container (Initially Hidden) -->
+        <div id="quizContainer" class="hidden max-w-3xl mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6 mb-8">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="quizTitle" class="text-2xl font-bold text-navy-blue">Quiz de Valores Bíblicos</h2>
+                <span id="questionCounter" class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">1/10</span>
+            </div>
+            
+            <div id="progressBar" class="w-full bg-gray-200 rounded-full h-2 mb-6">
+                <div id="progress" class="bg-blue-600 h-2 rounded-full" style="width: 10%"></div>
+            </div>
+            
+            <div id="bibleVerse" class="bg-amber-50 border-l-4 border-amber-400 p-4 mb-6 italic rounded-r-lg">
+                <i class="fas fa-quote-left text-amber-400 mr-2"></i>
+                <span id="verseText">El amor es paciente, es bondadoso...</span>
+                <span id="verseRef" class="block text-right text-sm mt-2 text-amber-600">1 Corintios 13:4</span>
+            </div>
+            
+            <h3 id="questionText" class="text-xl font-semibold mb-6">¿Cómo deberías actuar cuando alguien te ofende?</h3>
+            
+            <div id="optionsContainer" class="space-y-3 mb-8">
+                <!-- Options will be inserted here by JavaScript -->
+            </div>
+            
+            <div class="flex justify-between">
+                <button id="prevBtn" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hidden">
+                    <i class="fas fa-arrow-left mr-2"></i>Anterior
+                </button>
+                <button id="nextBtn" class="ml-auto px-6 py-2 btn-primary text-white font-semibold rounded-lg shadow-md">
+                    Siguiente <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+                <button id="finishBtn" class="px-6 py-2 bg-green-600 text-white font-semibold rounded-lg shadow-md hidden">
+                    Finalizar <i class="fas fa-check ml-2"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Container (Initially Hidden) -->
+        <div id="resultsContainer" class="hidden max-w-2xl mx-auto bg-white rounded-xl shadow-md overflow-hidden p-8 text-center">
+            <div class="mb-6">
+                <div class="inline-block p-4 bg-green-100 rounded-full">
+                    <i class="fas fa-trophy text-5xl text-amber-500"></i>
+                </div>
+            </div>
+            <h2 class="text-3xl font-bold text-navy-blue mb-2">¡Felicidades <span id="resultName" class="text-blue-600"></span>!</h2>
+            <p class="text-lg mb-6">Has completado el quiz de valores bíblicos para <span id="resultGrade" class="font-semibold"></span></p>
+            
+            <div class="inline-block bg-gray-100 px-8 py-4 rounded-lg mb-6">
+                <div class="text-5xl font-bold text-blue-600 mb-2">
+                    <span id="score">8</span>/10
+                </div>
+                <div class="text-gray-600">Tu puntuación</div>
+            </div>
+            
+            <div id="feedback" class="mb-8 px-4 py-6 bg-blue-50 rounded-lg">
+                <h3 class="text-xl font-semibold text-navy-blue mb-4">Retroalimentación</h3>
+                <p id="feedbackText" class="mb-4">¡Buen trabajo! Has demostrado un buen entendimiento de los valores bíblicos fundamentales.</p>
+            </div>
+            
+            <div id="moralLessons" class="text-left bg-amber-50 rounded-lg p-6 mb-8">
+                <h3 class="text-xl font-semibold text-navy-blue mb-4">
+                    <i class="fas fa-seedling text-green-600 mr-2"></i>Lecciones para tu vida
+                </h3>
+                <ul class="space-y-3">
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                        <span>El perdón libera tu corazón y te permite vivir en paz (Mateo 6:14-15)</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                        <span>La honestidad construye confianza y fortalece tus relaciones (Proverbios 12:22)</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                        <span>Servir a otros con amor refleja el corazón de Cristo (Gálatas 5:13)</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                        <span>Tu integridad en lo secreto define tu carácter público (Lucas 16:10)</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <button id="restartBtn" class="px-6 py-3 btn-primary text-white font-semibold rounded-lg shadow-lg hover:shadow-xl">
+                <i class="fas fa-redo mr-2"></i>Volver a empezar
+            </button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-navy-blue text-white py-6 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p class="mb-2">© 2023 Valores Bíblicos - Todos los derechos reservados</p>
+            <p class="text-sm opacity-75">"Instruye al niño en su camino, y aun cuando fuere viejo no se apartará de él." - Proverbios 22:6</p>
+        </div>
+    </footer>
+
+    <script>
+        // Quiz Data (30 questions total - 10 for each grade)
+        const quizData = {
+            '1BGU': [
+                {
+                    question: "¿Cómo deberías actuar cuando alguien te ofende?",
+                    verse: {
+                        text: "Antes bien, sean bondadosos y compasivos unos con otros, y perdónense mutuamente, así como Dios los perdonó a ustedes en Cristo.",
+                        ref: "Efesios 4:32"
+                    },
+                    options: [
+                        { text: "Guardar rencor y buscar venganza", correct: false },
+                        { text: "Ignorar a la persona permanentemente", correct: false },
+                        { text: "Hablar con la persona y perdonarla", correct: true },
+                        { text: "Contárselo a todos para que sepan cómo es", correct: false }
+                    ]
+                },
+                {
+                    question: "¿Qué harías si encuentras una billetera perdida con dinero?",
+                    verse: {
+                        text: "El que es fiel en lo muy poco, también en lo más es fiel; y el que en lo muy poco es injusto, también en lo más es injusto.",
+                        ref: "Lucas 16:10"
+                    },
+                    options: [
+                        { text: "Quedarte con el dinero", correct: false },
+                        { text: "Devolverla completa al dueño", correct: true },
+                        { text: "Tomar solo una parte del dinero", correct: false },
+                        { text: "Ignorarla y seguir caminando", correct: false }
+                    ]
+                },
+                {
+                    question: "¿Cómo demuestras respeto a tus padres?",
+                    verse: {
+                        text: "Honra a tu padre y a tu madre, que es el primer mandamiento con promesa.",
+                        ref: "Efesios 6:2"
+                    },
+                    options: [
+                        { text: "Siguiendo sus consejos y enseñanzas", correct: true },
+                        { text: "Solo cuando me conviene", correct: false },
+                        { text: "Discutiendo con ellos frecuentemente", correct: false },
+                        { text: "Pidiéndoles todo lo que quiero", correct: false }
+                    ]
+                },
+                {
+                    question: "¿Qué actitud deberías tener hacia los necesitados?",
+                    verse: {
+                        text: "Al contrario, cuando des un banquete, invita a los pobres, a los inválidos, a los cojos y a los ciegos.",
+                        ref: "Lucas 14:13"
+                    },
+                    options: [
+                        { text: "Indiferencia total", correct: false },
+                        { text: "Ayudar solo si no me afecta", correct: false },
+                        { text: "Compasión y deseo de ayudar", correct: true },
+                        { text: "Criticar su situación", correct: false }
+                    ]
+                },
+                {
+                    question: "¿Cómo reaccionas ante una injusticia que ves en la escuela?",
+                    verse: {
+                        text: "Aprendan a hacer el bien; busquen la justicia, reprendan al opresor; defiendan los derechos del huérfano, aboguen por la viuda.",
+                        ref: "Isaías 1:17"
+                    },
+                    options: [
+                        { text: "No hacer nada para evitar problemas", correct: false },
+                        { text: "Unirme a los que hacen la injusticia", correct: false },
+                        { text: "Defender al afectado con respeto", correct: true },
+                        { text: "Grabarlo y subirlo a redes sociales", correct: false }
+                    ]
+                },
+                {
+                    question: "¿Cómo mantienes tu palabra cuando haces una promesa?",
+                    verse: {
+                        text: "Más vale que no hagas promesas a Dios, a que las hagas y no las cumplas.",
+                        ref: "Eclesiastés 5:5"
+                    },
+                    options: [
+                        { text: "La cumplo sin importar las circunstancias", correct: true },
+                        { text: "La cumplo solo si me conviene", correct: false },
+                        { text: "La olvido si es difícil de cumplir", correct: false },
+                        { text: "Hago promesas que nunca pienso cumplir", correct: false }
+                    ]
+                },
+                {
+                    question: "¿Qué haces cuando tienes la oportunidad de copiar en un examen?",
+                    verse: {
+                        text: "El Señor odia los labios mentirosos, pero se deleita en los que dicen la verdad.",
+                        ref: "Proverbios 12:22"
+                    },
+                    options: [
+                        { text: "Copiar porque todos lo hacen", correct: false },
+                        { text: "No copiar aunque me vaya mal", correct: true },
+                        { text: "Copiar solo si es muy difícil", correct: false },
+                        { text: "Ayudar a otros a copiar", correct: false }
+                    ]
+                },
+                {
+                    question: "¿Cómo enfrentas las dificultades en tu vida?",
+                    verse: {
+                        text: "Todo lo puedo en Cristo que me fortalece.",
+                        ref: "Filipenses 4:13"
+                    },
+                    options: [
+                        { text: "Con miedo y desesperación", correct: false },
+                        { text: "Evitando los problemas", correct: false },
+                        { text: "Con fe y confianza en Dios", correct: true },
+                        { text: "Culpo a otros por mis problemas", correct: false }
+                    ]
+                },
+                {
+                    question: "¿Qué actitud tienes hacia los que son diferentes a ti?",
+                    verse: {
+                        text: "Hagan todo por amor.",
+                        ref: "1 Corintios 16:14"
+                    },
+                    options: [
+                        { text: "Evitarlos porque no son como yo", correct: false },
+                        { text: "Burlarme de sus diferencias", correct: false },
+                        { text: "Aceptarlos y aprender de ellos", correct: true },
+                        { text: "Forzarlos a ser como yo", correct: false }
+                    ]
+                },
+                {
+                    question: "¿Cómo usas tu tiempo libre?",
+                    verse: {
+                        text: "Todo tiene su momento oportuno; hay un tiempo para todo lo que se hace bajo el cielo.",
+                        ref: "Eclesiastés 3:1"
+                    },
+                    options: [
+                        { text: "Solo en diversión sin propósito", correct: false },
+                        { text: "En actividades que edifican mi vida", correct: true },
+                        { text: "Perdiendo el tiempo en redes", correct: false },
+                        { text: "No organizo mi tiempo", correct: false }
+                    ]
+                }
+            ],
+            '2BGU': [
+                {
+                    question: "¿Cómo manejas la responsabilidad de tus estudios?",
+                    verse: {
+                        text: "Todo lo que hagan, háganlo de corazón, como para el Señor y no para los hombres.",
+                        ref: "Colosenses 3:23"
+                    },
+                    options: [
+                        { text: "Estudio solo antes de los exámenes", correct: false },
+                        { text: "Postergo mis deberes constantemente", correct: false },
+                        { text: "Me organizo y cumplo mis metas", correct: true },
+                        { text: "Dependo de otros para mis trabajos", correct: false }
+                    ]
+                },
+                {
+                    question: "Si alguien te pide consejo sobre un problema difícil, ¿qué haces?",
+                    verse: {
+                        text: "La respuesta amable calma el enojo, pero la agresiva echa leña al fuego.",
+                        ref: "Proverbios 15:1"
+                    },
+                    options: [
+                        { text: "Dar un consejo basado en la Biblia", correct: true },
+                        { text: "Decirle que no sé qué aconsejar", correct: false },
+                        { text: "Dar mi opinión sin fundamento", correct: false },
+                        { text: "Contarle los problemas de otros", correct: false }
+                    ]
+                },
+                {
+                    question: "¿Cómo defines el éxito en tu vida?",
+                    verse: {
+                        text: "Más vale adquirir sabiduría que oro; más vale adquirir inteligencia que plata.",
+                        ref: "Proverbios 16:16"
+                    },
+                    options: [
+                        { text: "Por la cantidad de dinero que tenga", correct: false },
+                        { text: "Por los likes en mis redes sociales", correct: false },
+                        { text: "Por mi crecimiento integral con Dios", correct: true },
+                        { text: "Por ser mejor que los demás", correct: false }
+                    ]
+                },
+                {
+                    question: "¿Cuál es tu actitud hacia las normas de tus superiores?",
+                    verse: {
+                        text: "Sométase toda persona a las autoridades superiores, porque no hay autoridad que no provenga de Dios.",
+                        ref: "Romanos 13:1"
+                    },
+                    options: [
+                        { text: "Las sigo solo si estoy de acuerdo", correct: false },
+                        { text: "Las cuestiono constantemente", correct: false },
+                        { text: "Las respeto con sabia obediencia", correct: true },
+                        { text: "Busco cómo evadirlas", correct: false }
+                    ]
+                },
+                {
+                    question: "¿Cómo manejas situaciones de presión grupal?",
+                    verse: {
+                        text: "No se amolden al mundo actual, sino sean transformados mediante la renovación de su mente.",
+                        ref: "Romanos 12:2"
+                    },
+                    options: [
+                        { text: "Me dejo llevar por la mayoría", correct: false },
+                        { text: "Mantengo mis convicciones firmes", correct: true },
+                        { text: "Participo pero con remordimiento", correct: false },
+                        { text: "Presiono a otros para hacer lo mismo", correct: false }
+                    ]
+                },
+                {
+                    question: "¿Cómo construyes relaciones saludables?",
+                    verse: {
+                        text: "Por encima de todo, vístanse de amor, que es el vínculo perfecto.",
+                        ref: "Colosenses 3:14"
+                    },
+                    options: [
+                        { text: "Solo buscando mi beneficio", correct: false },
+                        { text: "Con honestidad y respeto mutuo", correct: true },
+                        { text: "Ignorando los defectos de otros", correct: false },
+                        { text: "Forzando a otros a cambiar", correct: false }
+                    ]
+                },
+                {
+                    question: "¿Qué haces cuando cometes un error importante?",
+                    verse: {
+                        text: "El que encubre su pecado jamás prospera; el que lo confiesa y lo abandona halla misericordia.",
+                        ref: "Proverbios 28:13"
+                    },
+                    options: [
+                        { text: "Culpabilidad constante sin solución", correct: false },
+                        { text: "Confieso, aprendo y rectifico", correct: true },
+                        { text: "Escondo el error a toda costa", correct: false },
+                        { text: "Culpo a otros de mi error", correct: false }
+                    ]
+                },
+                {
+                    question: "¿Cómo manejas las diferencias de opinión en tu grupo?",
+                    verse: {
+                        text: "Sean totalmente humildes y dóciles, y sean pacientes, soportándose unos a otros con amor.",
+                        ref: "Efesios 4:2"
+                    },
+                    options: [
+                        { text: "Insisto en que solo tengo razón", correct: false },
+                        { text: "Escucho y busco puntos en común", correct: true },
+                        { text: "Evito cualquier discusión", correct: false },
+                        { text: "Ridiculizo las ideas distintas", correct: false }
+                    ]
+                },
+                {
+                    question: "¿Cómo afecta tu fe a tus decisiones diarias?",
+                    verse: {
+                        text: "Ya sea que coman o beban o hagan cualquier otra cosa, háganlo todo para la gloria de Dios.",
+                        ref: "1 Corintios 10:31"
+                    },
+                    options: [
+                        { text: "Solo en decisiones importantes", correct: false },
+                        { text: "No considero mi fe en decisiones", correct: false },
+                        { text: "Es la base para todas mis acciones", correct: true },
+                        { text: "Cuando conviene a mis intereses", correct: false }
+                    ]
+                },
+                {
+                    question: "¿Cómo defines tu propósito en la vida?",
+                    verse: {
+                        text: "Porque somos creación de Dios, creados en Cristo Jesús para buenas obras, las cuales Dios dispuso de antemano a fin de que las pongamos en práctica.",
+                        ref: "Efesios 2:10"
+                    },
+                    options: [
+                        { text: "Buscando solo mi felicidad", correct: false },
+                        { text: "Por lo que la sociedad espera de mí", correct: false },
+                        { text: "Descubriendo el plan de Dios para mí", correct: true },
+                        { text: "Sin pensar en el futuro", correct: false }
+                    ]
+                }
+            ],
+            '3BGU': [
+                {
+                    question: "¿Cómo preparas tu vida para el futuro?",
+                    verse: {
+                        text: "El corazón del hombre traza su rumbo, pero el Señor dirige sus pasos.",
+                        ref: "Proverbios 16:9"
+                    },
+                    options: [
+                        { text: "Con preparación y dependencia de Dios", correct: true },
+                        { text: "Dejando todo al azar", correct: false },
+                        { text: "Angustiándome por lo que viene", correct: false },
+                        { text: "Imitando los planes de otros", correct: false }
+                    ]
+                },
+                {
+                    question: "¿Qué valores priorizas al elegir una carrera profesional?",
+                    verse: {
+                        text: "Busquen primeramente el reino de Dios y su justicia, y todas estas cosas les serán añadidas.",
+                        ref: "Mateo 6:33"
+                    },
+                    options: [
+                        { text: "Solo el potencial de ingresos", correct: false },
+                        { text: "Fama y reconocimiento social", correct: false },
+                        { text: "Vocación, servicio y propósito", correct: true },
+                        { text: "Lo más fácil para ganar dinero", correct: false }
+                    ]
+                },
+                {
+                    question: "¿Cómo enfrentas la incertidumbre de tu futuro?",
+                    verse: {
+                        text: "Porque yo sé muy bien los planes que tengo para ustedes - afirma el Señor - planes de bienestar y no de calamidad, a fin de darles un futuro y una esperanza.",
+                        ref: "Jeremías 29:11"
+                    },
+                    options: [
+                        { text: "Con miedo y ansiedad constante", correct: false },
+                        { text: "Descuidando mi presente", correct: false },
+                        { text: "Con fe, planificación y paz", correct: true },
+                        { text: "Copiando los planes de otros", correct: false }
+                    ]
+                },
+                {
+                    question: "¿Cómo practicas la justicia en tu vida cotidiana?",
+                    verse: {
+                        text: "Que actúen con justicia, amen la misericordia y se humillen ante su Dios.",
+                        ref: "Miqueas 6:8"
+                    },
+                    options: [
+                        { text: "Solo cuando afecta mis intereses", correct: false },
+                        { text: "Defendiendo principios en todo ámbito", correct: true },
+                        { text: "Esperando que otros actúen primero", correct: false },
+                        { text: "Ignorando situaciones injustas", correct: false }
+                    ]
+                },
+                {
+                    question: "¿Qué rol juega el servicio en tu proyecto de vida?",
+                    verse: {
+                        text: "No se contenten solo con escuchar la palabra, pues así se engañan ustedes mismos. Llévenla a la práctica.",
+                        ref: "Santiago 1:22"
+                    },
+                    options: [
+                        { text: "No es una prioridad en mi vida", correct: false },
+                        { text: "Solo cuando me beneficia", correct: false },
+                        { text: "Es parte esencial de mi propósito", correct: true },
+                        { text: "Que lo hagan otros", correct: false }
+                    ]
+                },
+                {
+                    question: "¿Cómo defines tu identidad ante la sociedad?",
+                    verse: {
+                        text: "Pero ustedes son linaje escogido, real sacerdocio, nación santa, pueblo que pertenece a Dios, para que proclamen las obras maravillosas de aquel que los llamó de las tinieblas a su luz admirable.",
+                        ref: "1 Pedro 2:9"
+                    },
+                    options: [
+                        { text: "Por mis posesiones materiales", correct: false },
+                        { text: "Por lo que dicen mis redes", correct: false },
+                        { text: "Como hijo de Dios con propósito", correct: true },
+                        { text: "Comparándome con los demás", correct: false }
+                    ]
+                },
+                {
+                    question: "¿Cómo manejas el estrés de la transición a la vida adulta?",
+                    verse: {
+                        text: "Echa sobre el Señor tu carga, y él te sustentará; no dejará caído jamás al justo.",
+                        ref: "Salmos 55:22"
+                    },
+                    options: [
+                        { text: "Evadiendo las responsabilidades", correct: false },
+                        { text: "Con malos hábitos de escape", correct: false },
+                        { text: "En oración y planificación sabia", correct: true },
+                        { text: "Presionándome más", correct: false }
+                    ]
+                },
+                {
+                    question: "¿Qué significa para ti la madurez espiritual?",
+                    verse: {
+                        text: "Ya no seremos niños, zarandeados por las olas y llevados de aquí para allá por todo viento de enseñanza.",
+                        ref: "Efesios 4:14"
+                    },
+                    options: [
+                        { text: "Solo asistir a la iglesia", correct: false },
+                        { text: "Una fe que transforma mi carácter", correct: true },
+                        { text: "Saber muchos versículos", correct: false },
+                        { text: "Criticar a los menos espirituales", correct: false }
+                    ]
+                },
+                {
+                    question: "¿Cómo influyes positivamente en tu generación?",
+                    verse: {
+                        text: "Nadie tiene mayor amor que este, que uno ponga su vida por sus amigos.",
+                        ref: "Juan 15:13"
+                    },
+                    options: [
+                        { text: "Viviendo con integridad y servicio", correct: true },
+                        { text: "Buscando fama en redes sociales", correct: false },
+                        { text: "Forzando a otros a pensar como yo", correct: false },
+                        { text: "Ignorando los problemas sociales", correct: false }
+                    ]
+                },
+                {
+                    question: "¿Qué legado quieres dejar en el mundo?",
+                    verse: {
+                        text: "El justo florece como la palmera; crece como cedro en el Líbano. Plantados en la casa del Señor, florecen en los atrios de nuestro Dios.",
+                        ref: "Salmos 92:12-13"
+                    },
+                    options: [
+                        { text: "Riquezas materiales", correct: false },
+                        { text: "Una influencia que glorifique a Dios", correct: true },
+                        { text: "Solo que recuerden mi nombre", correct: false },
+                        { text: "Nada en especial", correct: false }
+                    ]
+                }
+            ]
+        };
+
+        // Moralejas adicionales para resultados
+        const moralLessons = [
+            "La humildad precede a la honra (Proverbios 15:33)",
+            "Más vale el buen nombre que las muchas riquezas (Proverbios 22:1)",
+            "Como hierro afila al hierro, una persona estimula a otra (Proverbios 27:17)",
+            "El amor cubre multitud de pecados (1 Pedro 4:8)",
+            "Nadie puede servir a dos señores (Mateo 6:24)",
+            "La bendición de Jehová es la que enriquece (Proverbios 10:22)",
+            "Donde está tu tesoro, allí está tu corazón (Lucas 12:34)",
+            "Al que madruga, Dios le ayuda (Proverbios 8:17)",
+            "El ánimo alegre es buena medicina (Proverbios 17:22)",
+            "Mejor es dar que recibir (Hechos 20:35)"
+        ];
+
+        // Get DOM elements
+        const registerForm = document.getElementById('registerForm');
+        const quizContainer = document.getElementById('quizContainer');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const quizTitle = document.getElementById('quizTitle');
+        const questionCounter = document.getElementById('questionCounter');
+        const questionText = document.getElementById('questionText');
+        const verseText = document.getElementById('verseText');
+        const verseRef = document.getElementById('verseRef');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const finishBtn = document.getElementById('finishBtn');
+        const progress = document.getElementById('progress');
+        const resultName = document.getElementById('resultName');
+        const resultGrade = document.getElementById('resultGrade');
+        const score = document.getElementById('score');
+        const feedbackText = document.getElementById('feedbackText');
+        const restartBtn = document.getElementById('restartBtn');
+        const moralLessonsContainer = document.getElementById('moralLessons');
+
+        // Quiz state variables
+        let currentQuiz = [];
+        let currentQuestion = 0;
+        let scoreCount = 0;
+        let selectedGrade = '';
+        let userName = '';
+        let selectedOption = null;
+
+        // Event Listeners
+        registerForm.addEventListener('submit', startQuiz);
+        nextBtn.addEventListener('click', nextQuestion);
+        prevBtn.addEventListener('click', prevQuestion);
+        finishBtn.addEventListener('click', showResults);
+        restartBtn.addEventListener('click', restartQuiz);
+
+        // Start the quiz with selected grade
+        function startQuiz(e) {
+            e.preventDefault();
+            
+            userName = document.getElementById('name').value;
+            selectedGrade = document.getElementById('grade').value;
+            
+            currentQuiz = quizData[selectedGrade];
+            currentQuestion = 0;
+            scoreCount = 0;
+            
+            // Hide registration, show quiz
+            document.getElementById('registration').classList.add('hidden');
+            quizContainer.classList.remove('hidden');
+            
+            // Set quiz title based on grade
+            const gradeTitle = selectedGrade === '1BGU' ? '1° BGU' : 
+                              selectedGrade === '2BGU' ? '2° BGU' : '3° BGU';
+            quizTitle.textContent = `Quiz de Valores - ${gradeTitle}`;
+            
+            // Load first question
+            loadQuestion();
+        }
+
+        // Load question data
+        function loadQuestion() {
+            const question = currentQuiz[currentQuestion];
+            
+            // Update question counter
+            questionCounter.textContent = `${currentQuestion + 1}/${currentQuiz.length}`;
+            
+            // Update progress bar
+            progress.style.width = `${((currentQuestion + 1) / currentQuiz.length) * 100}%`;
+            
+            // Set question text, bible verse and reference
+            questionText.textContent = question.question;
+            verseText.textContent = question.verse.text;
+            verseRef.textContent = question.verse.ref;
+            
+            // Clear previous options
+            optionsContainer.innerHTML = '';
+            
+            // Create options buttons
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('button');
+                optionElement.className = 'w-full text-left px-4 py-3 border border-gray-300 rounded-lg hover:bg-blue-50 transition-colors';
+                optionElement.textContent = option.text;
+                optionElement.dataset.index = index;
+                
+                optionElement.addEventListener('click', () => selectOption(optionElement, index));
+                
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            // Manage buttons visibility
+            prevBtn.classList.toggle('hidden', currentQuestion === 0);
+            nextBtn.classList.toggle('hidden', currentQuestion === currentQuiz.length - 1);
+            finishBtn.classList.toggle('hidden', currentQuestion !== currentQuiz.length - 1);
+            
+            // Reset selected option
+            selectedOption = null;
+        }
+
+        // Select an option
+        function selectOption(element, index) {
+            // Remove selected class from all options
+            document.querySelectorAll('#optionsContainer button').forEach(btn => {
+                btn.classList.remove('option-selected');
+            });
+            
+            // Add selected class to clicked option
+            element.classList.add('option-selected');
+            selectedOption = index;
+            
+            const question = currentQuiz[currentQuestion];
+            
+            // Check if selected option is correct (but don't show yet)
+            if (question.options[index].correct) {
+                element.classList.add('option-correct');
+            }
+        }
+
+        // Go to next question
+        function nextQuestion() {
+            if (selectedOption !== null) {
+                // Check if answer is correct and increment score
+                const question = currentQuiz[currentQuestion];
+                if (question.options[selectedOption].correct) {
+                    scoreCount++;
+                }
+                
+                currentQuestion++;
+                loadQuestion();
+            } else {
+                alert('Por favor selecciona una respuesta antes de continuar.');
+            }
+        }
+
+        // Go to previous question
+        function prevQuestion() {
+            currentQuestion--;
+            loadQuestion();
+        }
+
+        // Show results
+        function showResults() {
+            if (selectedOption !== null) {
+                // Check last answer
+                const question = currentQuiz[currentQuestion];
+                if (question.options[selectedOption].correct) {
+                    scoreCount++;
+                }
+                
+                // Hide quiz, show results
+                quizContainer.classList.add('hidden');
+                resultsContainer.classList.remove('hidden');
+                
+                // Set results data
+                resultName.textContent = userName;
+                const gradeTitle = selectedGrade === '1BGU' ? '1° BGU' : 
+                                  selectedGrade === '2BGU' ? '2° BGU' : '3° BGU';
+                resultGrade.textContent = gradeTitle;
+                score.textContent = scoreCount;
+                
+                // Set feedback based on score
+                let feedback = '';
+                if (scoreCount === 10) {
+                    feedback = '¡Excelente! Demuestras un profundo entendimiento de los valores bíblicos.';
+                } else if (scoreCount >= 7) {
+                    feedback = '¡Buen trabajo! Tienes una buena base de valores cristianos.';
+                } else if (scoreCount >= 4) {
+                    feedback = 'Puedes mejorar. Reflexiona más sobre estos principios bíblicos.';
+                } else {
+                    feedback = 'Necesitas fortalecer tus valores. Estudia más la Biblia y estos principios.';
+                }
+                
+                feedbackText.textContent = feedback;
+                
+                // Add random moral lessons
+                const shuffledLessons = [...moralLessons].sort(() => 0.5 - Math.random());
+                const lessonsList = moralLessonsContainer.querySelector('ul');
+                lessonsList.innerHTML = ''; // Clear existing lessons
+                
+                // Add 4 random lessons
+                shuffledLessons.slice(0, 4).forEach(lesson => {
+                    const li = document.createElement('li');
+                    li.className = 'flex items-start';
+                    li.innerHTML = `<i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i><span>${lesson}</span>`;
+                    lessonsList.appendChild(li);
+                });
+            } else {
+                alert('Por favor selecciona una respuesta antes de finalizar.');
+            }
+        }
+
+        // Restart the quiz
+        function restartQuiz() {
+            resultsContainer.classList.add('hidden');
+            document.getElementById('registration').classList.remove('hidden');
+            
+            // Reset form
+            registerForm.reset();
+        }
+    </script>
+</body>
+</html>
